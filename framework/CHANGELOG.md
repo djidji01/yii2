@@ -202,6 +202,8 @@ Yii Framework 2 Change Log
 - Bug #18101: Fix behavior of `OUTPUT INSERTED.*` for SQL Server query: "insert default values"; correct MSSQL unit tests; turn off profiling echo message in migration test (darkdef)
 - Bug #18105: Fix for old trigger in RBAC migration with/without `prefixTable` (darkdef)
 - Bug #18110: Add quotes to return value of viewName in MSSQL schema. It is `[someView]` now (darkdef)
+- Bug #17985: Convert migrationNamespaces to array if needed (darkdef)
+- Enh #17941: Allow mapping a controller in module subdirectory #13433 (Djibril)
 - Bug #18127: Resolve DI references inside of arrays in dependencies (hiqsol)
 - Bug #18134: `Expression` as `columnName` should not be quoted in `likeCondition` (darkdef)
 - Bug #18147: Fix parameters binding for MySQL when prepare emulation is off (rskrzypczak)
