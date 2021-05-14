@@ -48,8 +48,8 @@ use yii\base\NotSupportedException;
  *
  * For more details and usage information on Validator, see the [guide article on validators](guide:input-validation).
  *
- * @property array $attributeNames Attribute names. This property is read-only.
- * @property array $validationAttributes List of attribute names. This property is read-only.
+ * @property-read array $attributeNames Attribute names. This property is read-only.
+ * @property-read array $validationAttributes List of attribute names. This property is read-only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
@@ -217,6 +217,7 @@ class Validator extends Component
             $params['class'] = __NAMESPACE__ . '\InlineValidator';
             $params['method'] = [$model, $type];
         } else {
+            unset($params['current']);
             if (isset(static::$builtInValidators[$type])) {
                 $type = static::$builtInValidators[$type];
             }

@@ -9,18 +9,19 @@ namespace yii\base;
 
 use Yii;
 use yii\di\Instance;
+use yii\di\NotInstantiableException;
 
 /**
  * Controller is the base class for classes containing controller logic.
  *
  * For more details and usage information on Controller, see the [guide article on controllers](guide:structure-controllers).
  *
- * @property Module[] $modules All ancestor modules that this controller is located within. This property is
- * read-only.
- * @property string $route The route (module ID, controller ID and action ID) of the current request. This
+ * @property-read Module[] $modules All ancestor modules that this controller is located within. This property
+ * is read-only.
+ * @property-read string $route The route (module ID, controller ID and action ID) of the current request.
+ * This property is read-only.
+ * @property-read string $uniqueId The controller ID that is prefixed with the module ID (if any). This
  * property is read-only.
- * @property string $uniqueId The controller ID that is prefixed with the module ID (if any). This property is
- * read-only.
  * @property View|\yii\web\View $view The view object that can be used to render views or view files.
  * @property string $viewPath The directory containing the view files for this controller.
  *
@@ -60,27 +61,27 @@ class Controller extends Component implements ViewContextInterface
      */
     public $layout;
     /**
-     * @var Action the action that is currently being executed. This property will be set
+     * @var Action|null the action that is currently being executed. This property will be set
      * by [[run()]] when it is called by [[Application]] to run an action.
      */
     public $action;
     /**
-     * @var Request|array|string The request
+     * @var Request|array|string The request.
      * @since 2.0.36
      */
     public $request = 'request';
     /**
-     * @var Response|array|string
+     * @var Response|array|string The response.
      * @since 2.0.36
      */
     public $response = 'response';
 
     /**
-     * @var View the view object that can be used to render views or view files.
+     * @var View|null the view object that can be used to render views or view files.
      */
     private $_view;
     /**
-     * @var string the root directory that contains view files for this controller.
+     * @var string|null the root directory that contains view files for this controller.
      */
     private $_viewPath;
 
@@ -128,6 +129,7 @@ class Controller extends Component implements ViewContextInterface
      *
      * [[\Yii::createObject()]] will be used later to create the requested action
      * using the configuration provided here.
+     * @return array
      */
     public function actions()
     {
@@ -553,8 +555,8 @@ class Controller extends Component implements ViewContextInterface
      * @param array &$args The array of arguments for the action, this function may append items to it.
      * @param array &$requestedParams The array with requested params, this function may write specific keys to it.
      * @throws ErrorException when we cannot load a required service.
-     * @throws \yii\base\InvalidConfigException Thrown when there is an error in the DI configuration.
-     * @throws \yii\di\NotInstantiableException Thrown when a definition cannot be resolved to a concrete class
+     * @throws InvalidConfigException Thrown when there is an error in the DI configuration.
+     * @throws NotInstantiableException Thrown when a definition cannot be resolved to a concrete class
      * (for example an interface type hint) without a proper definition in the container.
      * @since 2.0.36
      */

@@ -42,8 +42,8 @@ abstract class ErrorHandler extends Component
      */
     public $exception;
     /**
-     * @var bool if TRUE - `handleException()` will finish script with `ExitCode::OK`.
-     * FALSE - `ExitCode::UNSPECIFIED_ERROR`.
+     * @var bool if true - `handleException()` will finish script with `ExitCode::OK`.
+     * false - `ExitCode::UNSPECIFIED_ERROR`.
      * @since 2.0.36
      */
     public $silentExitOnException;
@@ -298,7 +298,7 @@ abstract class ErrorHandler extends Component
 
     /**
      * Renders the exception.
-     * @param \Exception $exception the exception to be rendered.
+     * @param \Exception|\Error|\Throwable $exception the exception to be rendered.
      */
     abstract protected function renderException($exception);
 
@@ -336,7 +336,7 @@ abstract class ErrorHandler extends Component
      *
      * This method can be used to convert exceptions inside of methods like `__toString()`
      * to PHP errors because exceptions cannot be thrown inside of them.
-     * @param \Exception $exception the exception to convert to a PHP error.
+     * @param \Exception|\Throwable $exception the exception to convert to a PHP error.
      */
     public static function convertExceptionToError($exception)
     {
@@ -345,7 +345,7 @@ abstract class ErrorHandler extends Component
 
     /**
      * Converts an exception into a simple string.
-     * @param \Exception|\Error $exception the exception being converted
+     * @param \Exception|\Error|\Throwable $exception the exception being converted
      * @return string the string representation of the exception.
      */
     public static function convertExceptionToString($exception)
@@ -363,7 +363,7 @@ abstract class ErrorHandler extends Component
 
     /**
      * Converts an exception into a string that has verbose information about the exception and its trace.
-     * @param \Exception|\Error $exception the exception being converted
+     * @param \Exception|\Error|\Throwable $exception the exception being converted
      * @return string the string representation of the exception.
      *
      * @since 2.0.14

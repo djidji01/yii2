@@ -196,6 +196,10 @@ class BaseArrayHelper
             $key = $lastKey;
         }
 
+        if (is_object($array) && property_exists($array, $key)) {
+            return $array->$key;
+        }
+
         if (static::keyExists($key, $array)) {
             return $array[$key];
         }
@@ -205,13 +209,20 @@ class BaseArrayHelper
             $key = substr($key, $pos + 1);
         }
 
-        if (static::isArrayAccess($array)) {
-            return static::keyExists($key, $array) ? $array[$key] : $default;
+        if (static::keyExists($key, $array)) {
+            return $array[$key];
         }
         if (is_object($array)) {
             // this is expected to fail if the property does not exist, or __get() is not implemented
             // it is not reliably possible to check whether a property is accessible beforehand
-            return $array->$key;
+            try {
+                return $array->$key;
+            } catch (\Exception $e) {
+                if ($array instanceof ArrayAccess) {
+                    return $default;
+                }
+                throw $e;
+            }
         }
 
         return $default;
@@ -513,7 +524,7 @@ class BaseArrayHelper
      * ```
      *
      * @param array $array
-     * @param int|string|\Closure $name
+     * @param int|string|array|\Closure $name
      * @param bool $keepKeys whether to maintain the array keys. If false, the resulting array
      * will be re-indexed with integers.
      * @return array the list of column values
@@ -861,22 +872,6 @@ class BaseArrayHelper
     }
 
     /**
-     * Checks whether a variable is an array or [[\ArrayAccess]].
-     *
-     * This method does the same as the PHP function [is_array()](https://secure.php.net/manual/en/function.is-array.php)
-     * but additionally works on objects that implement the [[\ArrayAccess]] interface.
-     * @param mixed $var The variable being evaluated.
-     * @return bool whether data on $var can be accessed as arrays
-     * @see https://secure.php.net/manual/en/function.is-array.php
-     * @since 2.0.36
-     */
-    public static function isArrayAccess($var)
-    {
-        return is_array($var) || $var instanceof \ArrayAccess;
-    }
-
-
-    /**
      * Checks whether an array or [[Traversable]] is a subset of another array or [[Traversable]].
      *
      * This method will return `true`, if all elements of `$needles` are contained in
@@ -953,13 +948,17 @@ class BaseArrayHelper
         $excludeFilters = [];
 
         foreach ($filters as $filter) {
-            if ($filter[0] === '!') {
+            if (!is_string($filter) && !is_int($filter)) {
+                continue;
+            }
+
+            if (is_string($filter) && strpos($filter, '!') === 0) {
                 $excludeFilters[] = substr($filter, 1);
                 continue;
             }
 
             $nodeValue = $array; //set $array as root node
-            $keys = explode('.', $filter);
+            $keys = explode('.', (string) $filter);
             foreach ($keys as $key) {
                 if (!array_key_exists($key, $nodeValue)) {
                     continue 2; //Jump to next filter
@@ -980,7 +979,7 @@ class BaseArrayHelper
 
         foreach ($excludeFilters as $filter) {
             $excludeNode = &$result;
-            $keys = explode('.', $filter);
+            $keys = explode('.', (string) $filter);
             $numNestedKeys = count($keys) - 1;
             foreach ($keys as $i => $key) {
                 if (!array_key_exists($key, $excludeNode)) {
